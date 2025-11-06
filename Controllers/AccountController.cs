@@ -91,12 +91,16 @@ namespace projetoMakers.Api.Controllers
                 await _userRepository.CreateUserAsync(novoUser);
 
                 // Retorna sucesso com a menssagem amigavel em "JSON"
-                return Ok(new { Message = "Usuário cadastrado com sucesso!" });
+                return Ok(new { 
+                    erro = false,
+                    Message = "Usuário cadastrado com sucesso!" });
             }
             // Tratamento de erro de duplicidade (chave única) no email no banco de dados.
             catch (SqlException ex)  when (ex.Number == 2627 || ex.Number == 2601)
             {
-                return Conflict(new { Message = "Este email já está em uso!" });
+                return Conflict(new {
+                    erro = true,
+                    Message = "Este email já está em uso!" });
             }
             // Captura outros erros genéricos e retorna código 500 (erro interno SRV)
             catch (Exception ex)
@@ -135,10 +139,18 @@ namespace projetoMakers.Api.Controllers
             }
             if (!isPasswordValid)
             {
-                return Unauthorized(new { message = "Usuário ou senha inválidos!" });
+                return Unauthorized(new { 
+                    erro = true,
+                    message = "Usuário ou senha inválidos!"
+                    
+                });
             }
             // 4. SUCESSO!!! (próxima etapa inserir o gerador do JWT)
-            return Ok(new { message = "Login realizado com sucesso!" });
+            return Ok(new { 
+                erro = false,
+                message = "Login realizado com sucesso!",
+                
+            });
         }
         // -----  MÉTODO DE HASHING DO SHA256 -----
         private string ComputeSha256Hash(string rawData)
